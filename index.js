@@ -30,6 +30,7 @@ function onHttpContextFactory(di, directory) {
         initialize: function () {
             var injector = new di.Injector(_.flattenDeep([
                 core.injectables,
+                core.workflowInjectables,
                 this.prerequisiteInjectables,
                 this.expressApp(),
                 this.injectables
