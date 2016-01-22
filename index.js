@@ -48,15 +48,15 @@ function onHttpContextFactory(di, directory) {
             helper.requireGlob(__dirname + '/lib/services/**/*.js'),
             helper.requireGlob(__dirname + '/lib/serializables/**/*.js'),
             require('./app'),
-            helper.requireWrapper('rimraf', 'rimraf'),
-            helper.requireWrapper('os-tmpdir', 'osTmpdir')
+            helper.requireWrapper('rimraf', 'rimraf', [], __dirname),
+            helper.requireWrapper('os-tmpdir', 'osTmpdir', [], __dirname)
         ]),
 
         prerequisiteInjectables: _.flattenDeep([
             onTasks.injectables,
             helper.simpleWrapper(ws, 'ws'),
             helper.simpleWrapper(ws.Server, 'WebSocketServer'),
-            helper.requireWrapper('swagger-express-mw', 'swagger')
+            helper.requireWrapper('swagger-express-mw', 'swagger', [], __dirname)
         ])
     };
 }
