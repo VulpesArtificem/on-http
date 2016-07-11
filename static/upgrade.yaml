@@ -1,0 +1,259 @@
+swagger: "2.0"
+info:
+  version: "2.0.0"
+  title: OnRack Configuration
+# during dev, should point to your local machine
+#host: localhost:10010
+# basePath prefixes all resource paths 
+basePath: /v2/OnRack
+# 
+schemes:
+  # tip: remove http to make production-grade
+  - http
+  - https
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+paths:
+  /Backup:
+    x-swagger-router-controller: upgrade
+    get:
+      description: Initiates an OnRack backup
+      operationId: backupPost
+      responses:
+        202:
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessfulResponse"
+        400:
+          $ref: "#/responses/status_400"
+        401:
+          $ref: "#/responses/status_401"
+        403:
+          $ref: "#/responses/status_403"
+        429:
+          $ref: "#/responses/status_429"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /Backup/Status/{transaction_id}:
+    x-swagger-router-controller: upgrade
+    get:
+      description: Retrieves the status of the OnRack backup
+      operationId: backupGetStatus
+      parameters:
+        - name: transaction_id
+          in: path
+          description: The transaction ID of the backup
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessfulResponse"
+        400:
+          $ref: "#/responses/status_400"
+        401:
+          $ref: "#/responses/status_401"
+        403:
+          $ref: "#/responses/status_403"
+        404:
+          $ref: "#/responses/status_404"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /Backup/{filename}:
+    x-swagger-router-controller: upgrade
+    get:
+      description: Retrieves an OnRack backup file
+      operationId: backupGetFile
+      parameters:
+        - name: filename
+          in: path
+          description: The name of backup file to be downloaded
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success
+        400:
+          $ref: "#/responses/status_400"
+        401:
+          $ref: "#/responses/status_401"
+        403:
+          $ref: "#/responses/status_403"
+        404:
+          $ref: "#/responses/status_404"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /Restore:
+    x-swagger-router-controller: upgrade
+    post:
+      description: Initiates an OnRack restore
+      operationId: restorePost
+      parameters:
+        - name: payload
+          description: Image URL
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ImageUrl"
+      responses:
+        202:
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessfulResponse"
+        400:
+          $ref: "#/responses/status_400"
+        401:
+          $ref: "#/responses/status_401"
+        403:
+          $ref: "#/responses/status_403"
+        429:
+          $ref: "#/responses/status_429"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /Restore/Status/{transaction_id}:
+    x-swagger-router-controller: upgrade
+    get:
+      description: Retrieves the status of the OnRack restore
+      operationId: restoreGetStatus
+      parameters:
+        - name: transaction_id
+          in: path
+          description: The transaction ID of the restore
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessfulResponse"
+        400:
+          $ref: "#/responses/status_400"
+        401:
+          $ref: "#/responses/status_401"
+        403:
+          $ref: "#/responses/status_403"
+        404:
+          $ref: "#/responses/status_404"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+
+  /Upgrade:
+    x-swagger-router-controller: upgrade
+    post:
+      description: Initiates a software upgrade on the OnRack appliance
+      operationId: upgradePost
+      parameters:
+        - name: payload
+          description: Image URL
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/ImageUrl"
+      responses:
+        202:
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessfulResponse"
+        400:
+          $ref: "#/responses/status_400"
+        401:
+          $ref: "#/responses/status_401"
+        403:
+          $ref: "#/responses/status_403"
+        429:
+          $ref: "#/responses/status_429"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+            
+  /Upgrade/Status/{transaction_id}:
+    x-swagger-router-controller: upgrade
+    get:
+      description: Returns the status of an upgrade
+      operationId: upgradeGetStatus
+      parameters:
+        - name: transaction_id
+          in: path
+          description: Transaction ID
+          required: true
+          type: string
+      responses:
+        200:
+          description: Success
+          schema:
+            $ref: "#/definitions/SuccessfulResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+responses:
+  status_400:
+    description: >
+      The request had bad syntax or was inherently impossible to be satisfied.
+  status_401:
+    description: >
+      The parameter to this message gives a specification of authorization schemes which are
+      acceptable. The client should retry the request with a suitable Authentication-Token
+      header or auth_token attribute-value pair as part of query portion of the url.
+  status_403:
+    description: >
+      The server could not verify that you are authorized to perform this operation on this
+      resource. The client should retry the request with an Authentication-Token with the
+      required access role.
+  status_404:
+    description: >
+      The request specified a URI of a resource that does not exist.
+  status_429:
+    description: >
+      Too Many Requests
+definitions:
+  ImageUrl:
+     required:
+       - image_url
+     properties:
+       image_url:
+         type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string
+  SuccessfulResponse:
+    type: object
+    properties:
+      state:
+        type: string
+        description: task object name
+      href:
+        type: string
+        description: task description
+      transaction_id:
+        type: string
+        description: task description
+    required:
+      - state
+      - href
+      - transaction_id
