@@ -27,10 +27,12 @@ pushd ./swagger-codegen && mvn package && popd
 java -jar ./swagger-codegen/modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate -i static/monorail.yml -o on-http-api1.1 -l python --additional-properties packageName=on_http_api1_1
 java -jar ./swagger-codegen/modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate -i static/monorail-2.0.yaml -o on-http-api2.0 -l python --additional-properties packageName=on_http_api2_0
 java -jar ./swagger-codegen/modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate -i static/redfish.yaml -o on-http-redfish-1.0 -l python --additional-properties packageName=on_http_redfish_1_0
+java -jar ./swagger-codegen/modules/swagger-codegen-cli/target/swagger-codegen-cli.jar generate -i static/upgrade.yaml -o on-http-onrack -l python --additional-properties packageName=on_http_onrack
 
 
 ./build-package.bash python-client "${BRANCH}" "on-http-api1.1"
 ./build-package.bash python-client "${BRANCH}" "on-http-api2.0"
+./build-package.bash python-client "${BRANCH}" "on-http-onrack"
 ./build-package.bash python-client "${BRANCH}" "on-http-redfish-1.0"
 ./build-package.bash on-http "${BRANCH}"
 if [ -d deb ]; then rm -rf deb/; fi
