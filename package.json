@@ -18,9 +18,11 @@
   "license": "Apache-2.0",
   "dependencies": {
     "acl": "~0.4.9",
+    "amqp": "0.2.3",
     "body-parser": "^1.10.1",
     "cors": "^2.5.2",
     "debug": "~2.2.0",
+    "dateformat": "1.0.12",
     "di": "git+https://github.com/RackHD/di.js.git",
     "ejs": "^2.0.8",
     "es6-shim": "^0.22.2",

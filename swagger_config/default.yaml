@@ -15,7 +15,7 @@ swagger:
       name: swagger_router
       mockMode: false
       mockControllersDirs: [ lib/api/2.0/mocks lib/api/redfish-1.0/mocks ]
-      controllersDirs: [ lib/api/2.0, lib/api/redfish-1.0 ]
+      controllersDirs: [ lib/api/2.0, lib/api/onrack, lib/api/redfish-1.0 ]
 
     _swagger_validate:
       name: swagger_validator
