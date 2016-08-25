@@ -140,7 +140,7 @@ describe('2.0 Http.Api.Nodes', function () {
             nodeApiService.postNode.resolves(node);
 
             return helper.request().post('/api/2.0/nodes')
-                .send(node)
+                .send(rawNode)
                 .expect('Content-Type', /^application\/json/)
                 .expect(201, node)
                 .expect(function () {
@@ -181,7 +181,7 @@ describe('2.0 Http.Api.Nodes', function () {
             waterline.nodes.needByIdentifier.resolves(node);
             waterline.nodes.updateByIdentifier.resolves(node);
             return helper.request().patch('/api/2.0/nodes/1234')
-                .send(node)
+                .send(rawNode)
                 .expect('Content-Type', /^application\/json/)
                 .expect(200, node)
                 .expect(function () {
@@ -197,7 +197,7 @@ describe('2.0 Http.Api.Nodes', function () {
             waterline.nodes.needByIdentifier.rejects(new Errors.NotFoundError('Not Found'));
 
             return helper.request().patch('/api/2.0/nodes/1234')
-                .send(node)
+                .send(rawNode)
                 .expect('Content-Type', /^application\/json/)
                 .expect(404);
         });
@@ -540,8 +540,9 @@ describe('2.0 Http.Api.Nodes', function () {
         it('should create a workflow via the querystring', function () {
             nodeApiService.setNodeWorkflow.resolves(graph);
 
-            return helper.request().post('/api/2.0/nodes/123/workflows')
-                .send({ name: 'TestGraph.Dummy', domain: 'test' })
+            return helper.request()
+                .post('/api/2.0/nodes/123/workflows?name=TestGraph.Dummy')
+                .send({ domain: 'test' })
                 .expect('Content-Type', /^application\/json/)
                 .expect(201)
                 .expect(function () {
@@ -556,11 +557,31 @@ describe('2.0 Http.Api.Nodes', function () {
                 });
         });
 
+        it('should let the graph name in querystring take precedance over body', function () {
+            nodeApiService.setNodeWorkflow.resolves(graph);
+
+            return helper.request().post('/api/2.0/nodes/123/workflows?name=Graph.foo')
+                .send({ name: 'Graph.bar', options: { test: 'foo' }, domain: 'test' })
+                .expect('Content-Type', /^application\/json/)
+                .expect(201)
+                .expect(function () {
+                    expect(nodeApiService.setNodeWorkflow).to.have.been.calledOnce;
+                    expect(nodeApiService.setNodeWorkflow).to.have.been.calledWith(
+                        {
+                            name: 'Graph.foo',
+                            domain: 'test',
+                            options: { test: 'foo' }
+                        },
+                        '123'
+                    );
+                });
+        });
+
         it('should create a workflow with options via the querystring', function () {
             nodeApiService.setNodeWorkflow.resolves(graph);
 
-            return helper.request().post('/api/2.0/nodes/123/workflows')
-                .send({ name: 'TestGraph.Dummy', options: { test: 'foo' }, domain: 'test' })
+            return helper.request().post('/api/2.0/nodes/123/workflows?name=TestGraph.Dummy')
+                .send({ options: { test: 'foo' }, domain: 'test' })
                 .expect('Content-Type', /^application\/json/)
                 .expect(201)
                 .expect(function () {
@@ -720,5 +741,5 @@ describe('2.0 Http.Api.Nodes', function () {
                 });
         });
     });
-    
+
 });
