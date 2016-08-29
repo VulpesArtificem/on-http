@@ -86,6 +86,18 @@ paths:
         Get a list of all active pollers
       description: |
         Get list of all pollers that are currently running.
+      parameters:
+      - name: $skip
+        in: query
+        description: Query string specifying properties to search for
+        required: false
+        type: integer
+      - name: $top
+        in: query
+        description: Query string specifying properties to search for
+        required: false
+        type: integer
+        #default: 4
       tags: [ "/api/2.0" ]
       responses:
         200:
@@ -1758,12 +1770,23 @@ paths:
         Get list workflow that have been run, or are currently running.
       tags: [ "/api/2.0" ]
       parameters:
-        - name: active
-          in: query
-          description: |
-            Query string to search for specific workflow properties
-          required: false
-          type: boolean
+      - name: active
+        in: query
+        description: |
+          Query string to search for specific workflow properties
+        required: false
+        type: boolean
+      - name: $skip
+        in: query
+        description: Query string specifying properties to search for
+        required: false
+        type: integer
+      - name: $top
+        in: query
+        description: Query string specifying properties to search for
+        required: false
+        type: integer
+        #default: 4
       responses:
         200:
           description: |
@@ -2354,7 +2377,115 @@ paths:
           description: Unexpected error
           schema:
             $ref: '#/definitions/Error'
-
+  /nodes/{identifier}/relations:
+    x-swagger-router-controller: nodes
+    get:
+      operationId: nodesGetRelations
+      x-privileges: [ 'Read' ]
+      x-authentication-type: [ 'jwt' ]
+      summary: |
+        Get a node's relations
+      description: |
+        Get the relations field of a node
+      parameters:
+        - name: identifier
+          in: path
+          description: |
+              The node identifier
+          required: true
+          type: string
+      tags: [ "/api/2.0" ]
+      responses:
+        200:
+          description: Successfully retrieved the node's relations
+          schema:
+            type: array
+            items:
+              type: object
+        404:
+          description: The node with the identifier was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      x-swagger-schema: relations.2.0.json#/definitions/Relation
+      operationId: nodesDelRelations
+      x-privileges: [ 'Write' ]
+      x-authentication-type: [ 'jwt' ]
+      summary: |
+        Remove relations from nodes
+      description: |
+        Edit the relations fields of nodes to remove specific relationships
+      parameters:
+        - name: identifier
+          in: path
+          description: |
+                The node identifier
+          required: true
+          type: string
+        - name: content
+          in: body
+          description: |
+              A json object with relation types as keys and arrays of node ids 
+              as values. The node's given relation types will be updated to remove
+              the nodes given by id 
+          required: true
+          schema:
+            $ref: '#/definitions/generic_obj'
+      tags: [ "/api/2.0" ]
+      responses:
+        204:
+          description: Successfully removed the relations 
+        404:
+          description: The node with the identifier was not found.
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    put:
+      x-swagger-schema: relations.2.0.json#/definitions/Relation
+      operationId: nodesAddRelations
+      x-privileges: [ 'Write' ]
+      x-authentication-type: [ 'jwt' ]
+      summary: |
+        Add relationships between nodes
+      description: |
+        Edit the relations fields of nodes to add realtionships
+      parameters:
+        - name: identifier
+          in: path
+          description: |
+            The identifier for the node
+          required: true
+          type: string
+        - name: content
+          in: body
+          description: |
+              A json object with relation types as keys and arrays of node ids 
+              as values. The node's given relation types will be updated with the 
+              nodes given by id  
+          required: true
+          schema:
+            $ref: '#/definitions/generic_obj'
+      tags: [ "/api/2.0" ]
+      responses:
+        200:
+          description: update succeeded
+          schema:
+            type: object
+        404:
+          description: Not found
+          schema:
+            $ref: '#/definitions/Error'
+        default:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
   /nodes/{identifier}/tags:
     x-swagger-router-controller: nodes
     get:
@@ -2470,6 +2601,18 @@ paths:
         Get a list of nodes
       description: |
         Get a list of all currently stored nodes.
+      parameters:
+      - name: $skip
+        in: query
+        description: Query string specifying properties to search for
+        required: false
+        type: integer
+      - name: $top
+        in: query
+        description: Query string specifying properties to search for
+        required: false
+        type: integer
+        #default: 4
       tags: [ "/api/2.0" ]
       responses:
         200:
@@ -2548,7 +2691,7 @@ paths:
       operationId: lookupsPost
       x-privileges: [ 'Write' ]
       x-authentication-type: [ 'jwt' ]
-      x-swagger-schema: Lookups.2.0.json#/definitions/LookupPost
+      x-swagger-schema: lookups.2.0.json#/definitions/LookupPost
       summary: |
         Post a lookup
       description: |
@@ -2629,7 +2772,7 @@ paths:
       operationId: lookupsPatchById
       x-privileges: [ 'Write' ]
       x-authentication-type: [ 'jwt' ]
-      x-swagger-schema: Lookups.2.0.json#/definitions/LookupBase
+      x-swagger-schema: lookups.2.0.json#/definitions/LookupBase
       summary: |
         Patch a lookup
       description: |
