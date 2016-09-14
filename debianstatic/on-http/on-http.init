@@ -27,7 +27,7 @@ RESTART=false
 if [ ! -f "/etc/default/$NAME" ]
 then
     echo "Service disabled due to absence of /etc/default/$NAME" 1>&2
-    exit 1
+    exit 0
 else
      . "/etc/default/$NAME"
 fi
